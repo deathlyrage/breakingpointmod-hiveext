@@ -25,3 +25,15 @@ Source code to the C++ Hive Extension used for Database Intergration and many of
 
 The Hive Extension will be automatically built by a build server when there is a commit or merge on github and deploy to a new version on steam. 
 If you have new features to merge into Breaking Point that the community could use, please submit it as a pull requst and I'll do a new build and improve the mod for everyone.
+
+## Credits
+
+* Deathlyrage / Breaking Point Mod Team / Alderon Games Pty Ltd
+* KamikazeXeX
+* Rajko Stojadinovic
+* Cameron Desrochers
+* Prithu "bladez" Parker
+* Declan Ireland
+* MySQL Team + Oracle
+* Poco C++ Lib Team
+* Boost C++ Team
