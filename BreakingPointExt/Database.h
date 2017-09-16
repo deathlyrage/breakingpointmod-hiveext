@@ -89,7 +89,7 @@ class Database
 
 		void shutdownCleanup();
 
-		Account lookupAccount(std::string guid);
+		//Account lookupAccount(std::string guid);
 
 		void populateObjects(std::queue<Sqf::Parameters>& queue);
 		void populateVehicles(std::queue<Sqf::Parameters>& queue);

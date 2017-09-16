@@ -50,10 +50,10 @@ class BreakingPointExt
 		//Complete Async Commands
 		void callExtensionAsync(std::string cmd, bool important = true);
 
-		//Check Player Account on Web Server / Forums DB
-		Database::Account lookupAccount(std::string guid);
-		void checkAccount(std::string playerID, std::string guid);
-		void checkAccountAsync(std::string guid);
+		// Check Player Account on Web Server / Forums DB
+		//Database::Account lookupAccount(std::string guid);
+		//void checkAccount(std::string playerID, std::string guid);
+		//void checkAccountAsync(std::string guid);
 
 		void logKick(std::string name, std::string guid, std::string kick);
 

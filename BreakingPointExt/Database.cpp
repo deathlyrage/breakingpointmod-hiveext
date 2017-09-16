@@ -32,18 +32,22 @@ void Database::connect()
 
 		// Setup Session Null Ptrs
 		activeSession = nullptr;
-		
-		std::string DatabaseIP = breakingPointExt->DatabaseIP;
-		std::string DatabaseName = breakingPointExt->DatabaseName;
-		std::string DatabaseUser = breakingPointExt->DatabaseUser;
-		std::string DatabasePass = breakingPointExt->DatabasePass;
-		std::string DatabasePort = breakingPointExt->DatabasePort;
 
 		// Connect to Game DB
-		string game_conn = "host=" + DatabaseIP + ";port=" + DatabasePort + ";user=" + DatabaseUser + ";password=" + DatabasePass +";db=" + DatabaseName + ";auto-reconnect=true";
+		string game_conn = 
+			"host=" + breakingPointExt->DatabaseIP + ";"
+			"port=" + breakingPointExt->DatabasePort + ";"
+			"user=" + breakingPointExt->DatabaseUser + ";"
+			"password=" + breakingPointExt->DatabasePass + ";"
+			"db=" + breakingPointExt->DatabaseName + ";"
+			"auto-reconnect=true";
 		activeSession = new Poco::Data::Session("MySQL", game_conn);
 
-		std::cout << "Database Connection String: " << game_conn << std::endl;
+		// Clear the Database Password out of Memory
+		breakingPointExt->DatabasePass = "";
+
+		// Log Connection String
+		//std::cout << "Database Connection String: " << game_conn << std::endl;
 
 		// Game DB Failure
 		if (activeSession->isConnected()) {
@@ -200,12 +204,12 @@ bool Database::connectionFailure()
 	return false;
 }
 
+/*
 Database::Account Database::lookupAccount(std::string guid)
 {
 	Account account;
 	account.guid = guid;
 
-	/*
 	try
 	{
 		if (webserver->isConnected())
@@ -287,8 +291,8 @@ Database::Account Database::lookupAccount(std::string guid)
 	}
 
 	return account;
-	*/
 }
+*/
 
 void Database::shutdownCleanup()
 {

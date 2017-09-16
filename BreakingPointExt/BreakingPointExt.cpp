@@ -193,10 +193,12 @@ void BreakingPointExt::InitThreads()
 	if (asyncWorker) { async_worker_thread.start(*asyncWorker); }
 }
 
+/*
 Database::Account BreakingPointExt::lookupAccount(std::string guid)
 {
 	return database->lookupAccount(guid);
 }
+*/
 
 void BreakingPointExt::callExtensionAsync(std::string cmd, bool important)
 {
@@ -363,8 +365,7 @@ int BreakingPointExt::timeUntilRestart()
 	return remainingTime;
 }
 
-//Player Login
-
+/*
 void BreakingPointExt::checkAccount(std::string playerID, std::string guid)
 {
 	if (whitelist)
@@ -414,6 +415,7 @@ void BreakingPointExt::checkAccount(std::string playerID, std::string guid)
 		}
 	}
 }
+*/
 
 Sqf::Value BreakingPointExt::playerConnected(Sqf::Parameters params)
 {
@@ -421,7 +423,7 @@ Sqf::Value BreakingPointExt::playerConnected(Sqf::Parameters params)
 	std::string playerName = Sqf::GetStringAny(params.at(1));
 	std::string guid = VAC::convertSteamIDtoBEGUID(playerID);
 
-	checkAccount(playerID, guid);
+	//checkAccount(playerID, guid);
 
 	return booleanReturn(true);
 };
