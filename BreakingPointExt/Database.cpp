@@ -43,6 +43,8 @@ void Database::connect()
 		string game_conn = "host=" + DatabaseIP + ";port=" + DatabasePort + ";user=" + DatabaseUser + ";password=" + DatabasePass +";db=" + DatabaseName + ";auto-reconnect=true";
 		activeSession = new Poco::Data::Session("MySQL", game_conn);
 
+		std::cout << "Database Connection String: " << game_conn << std::endl;
+
 		// Game DB Failure
 		if (activeSession->isConnected()) {
 			std::cout << "Database Connection Success (Game DB)" << std::endl;
