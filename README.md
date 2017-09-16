@@ -2,13 +2,20 @@
 
 Source code to the C++ Hive Extension used for Database Intergration and many of the server side calls in Breaking Point Mod.
 
-## Objectives & Goals
-* Provide a better version of the hive extension for the servers still running
-* Remove Hard Coded Usernames / Passwords / Server IP Addresses
-* Remove Code that depends on the removed ( The Zombie Infection ) Community and Databases
+## Todo
 * Support SQLite so people can setup servers easily without needing to run a full MySQL Instance
 * Cross Platform Support ( Windows, Linux )
+
+## Current Features
 * 64 Bit Support ( Supports running the 64 Bit Arma 3 Server Executable allowing the arma 3 instance to allocate more memory )
+* Multi-threaded & Async Hive Extension that is non-blocking
+* Supports Priorty Calls both High & Low. High Priorty Calls will run first.
+* Queue System that allows scheduling and checking if a sql call is finished or not
+* Fire Daemon Support ( Allows for Automatic Restarting / Running as a Service )
+* Rcon Support ( Kicking Players, Validation, Whitelisting of Players )
+* Steam Web API Support ( Vac Queries etc )
+* Automatic Server Restarts + Warnings through hive extension connecting locally though rcon
+* Threading Settings ( Determine how much CPU Usage the Hive Extension will use and how often it will sleep between calls )
 
 ## Conflicts & Problems
 
