@@ -43,7 +43,7 @@ class Rcon : public Poco::Runnable
 		Rcon();
 		~Rcon();
 
-		void init(int a_totalSlots, int a_reservedSlots, std::string a_serviceName, bool a_whitelist);
+		void init(int a_totalSlots, int a_reservedSlots, std::string a_serviceName, std::string a_fireDaemonPath, bool a_whitelist);
 		void updateLogin(std::string address, int port, std::string password);
 
 		void run();
@@ -81,6 +81,7 @@ class Rcon : public Poco::Runnable
 		int totalSlots;
 		int reservedSlots;
 		std::string serviceName;
+		std::string fireDaemonPath;
 		int lastWarningMinute;
 		bool whitelist;
 

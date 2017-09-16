@@ -49,7 +49,8 @@ BreakingPointExt::BreakingPointExt(std::string a_serverFolder, int a_serverPort)
 	boost::property_tree::ini_parser::read_ini(serverFolder + "/BreakingPointExt.ini", pt);
 	int totalSlots = pt.get<int>("VIP.slots", 100);
 	int reservedSlots = pt.get<int>("VIP.reserved", 10);
-	std::string serviceName = pt.get<std::string>("FIREDAEMON.service","BPA3_1");
+	std::string serviceName = pt.get<std::string>("FIREDAEMON.service", "BPA3_1");
+	std::string fireDaemonPath = pt.get<std::string>("FIREDAEMON.path", "C:/Program Files/FireDaemon/Firedaemon.exe");
 	std::string serverPassword = pt.get<std::string>("RCON.password", "rconpw");
 	std::string whitelistStr = pt.get<std::string>("RCON.whitelist", "false");
 	int rconPort = pt.get<int>("RCON.port", 2305);
@@ -69,7 +70,7 @@ BreakingPointExt::BreakingPointExt(std::string a_serverFolder, int a_serverPort)
 	//Init Rcon
 	rcon = new Rcon();
 	rcon->updateLogin("127.0.0.1", rconPort, serverPassword);
-	rcon->init(totalSlots, reservedSlots, serviceName,whitelist);
+	rcon->init(totalSlots, reservedSlots, serviceName, fireDaemonPath, whitelist);
 
 	//Init Async Worker
 	asyncWorker = new AsyncWorker(threadingDebug,threadingSize,threadingDelay);
