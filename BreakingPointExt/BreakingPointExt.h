@@ -29,6 +29,13 @@ class BreakingPointExt
 
 		int timeUntilRestart();
 
+		// Database Details
+		std::string DatabaseIP;
+		std::string DatabaseName;
+		std::string DatabaseUser;
+		std::string DatabasePass;
+		std::string DatabasePort;
+
 		//Check Invalid Names
 		bool invalidName(std::string playerName);
 		bool invalidName(std::string playerName, std::string guid);

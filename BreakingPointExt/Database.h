@@ -65,8 +65,7 @@ class Database
 {
 	private:
 		Poco::Data::Session * activeSession;
-		Poco::Data::Session * webserver;
-
+		
 	public:
 
 		struct Account

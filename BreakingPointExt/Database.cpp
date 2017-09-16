@@ -1,6 +1,8 @@
 #include "Database.h"
-
+#include "BreakingPointExt.h"
 #include "Poco/Data/RecordSet.h"
+
+extern BreakingPointExt * breakingPointExt;
 
 Database::Database()
 {
@@ -10,14 +12,10 @@ Database::Database()
 Database::~Database()
 {
 	activeSession->close();
-	webserver->close();
 
 	delete activeSession;
 	activeSession = nullptr;
 
-	delete webserver;
-	webserver = nullptr;
-	
 	Poco::Data::MySQL::Connector::unregisterConnector();
 };
 
@@ -25,66 +23,32 @@ void Database::connect()
 {
 	try
 	{
-		//Open Console and Enable STD Write Out
+		// Open Console and Enable STD Write Out
 		AllocConsole();
 		freopen("CONOUT$", "w", stdout);
 
-		//Log Connection Starting
+		// Log Connection Starting
 		std::cout << "Starting Connection To Databases..." << std::endl;
 
-		//Setup Session Null Ptrs
+		// Setup Session Null Ptrs
 		activeSession = nullptr;
-		webserver = nullptr;
+		
+		std::string DatabaseIP = breakingPointExt->DatabaseIP;
+		std::string DatabaseName = breakingPointExt->DatabaseName;
+		std::string DatabaseUser = breakingPointExt->DatabaseUser;
+		std::string DatabasePass = breakingPointExt->DatabasePass;
+		std::string DatabasePort = breakingPointExt->DatabasePort;
 
-#ifdef DEV
-		//Connect to Web DB
-		std::cout << "Connecting to Webserver DB.." << std::endl;
-
-		string web_conn = "host=127.0.0.1;port=3306;user=root;password=;db=webdb;auto-reconnect=true";
-		webserver = new Poco::Data::Session("MySQL", web_conn);
-
-		//Web DB Failure
-		if (webserver->isConnected()) {
-			std::cout << "Database Connection Success (Webserver DB)" << std::endl;
-		} else {
-			std::cout << "Database Connection Failure (Webserver DB)" << std::endl;
-		}
-
-		//Connect to Game DB
-		std::cout << "Connecting to Game DB.." << std::endl;
-		string game_conn = "host=127.0.0.1;port=3307;user=root;password=;db=gamedb;auto-reconnect=true";
+		// Connect to Game DB
+		string game_conn = "host=" + DatabaseIP + ";port=" + DatabasePort + ";user=" + DatabaseUser + ";password=" + DatabasePass +";db=" + DatabaseName + ";auto-reconnect=true";
 		activeSession = new Poco::Data::Session("MySQL", game_conn);
 
-		//Game DB Failure
+		// Game DB Failure
 		if (activeSession->isConnected()) {
 			std::cout << "Database Connection Success (Game DB)" << std::endl;
 		} else {
 			std::cout << "Database Connection Failure (Game DB)" << std::endl;
 		}
-
-#else
-		//Connect to Web DB
-		string web_conn = "host=127.0.0.1;port=3306;user=root;password=;db=webdb;auto-reconnect=true";
-		webserver = new Poco::Data::Session("MySQL", web_conn);
-
-		//Web DB Failure
-		if (webserver->isConnected()) {
-			std::cout << "Database Connection Success (Webserver DB)" << std::endl;
-		} else {
-			std::cout << "Database Connection Failure (Webserver DB)" << std::endl;
-		}
-
-		//Connect to Game DB
-		string game_conn = "host=127.0.0.1;port=3306;user=root;password=;db=gamedb;auto-reconnect=true";
-		activeSession = new Poco::Data::Session("MySQL", game_conn);
-
-		//Game DB Failure
-		if (activeSession->isConnected()) {
-			std::cout << "Database Connection Success (Game DB)" << std::endl;
-		} else {
-			std::cout << "Database Connection Failure (Game DB)" << std::endl;
-		}
-#endif
 
 		if (!activeSession) { std::cout << "Critical Database Connection Failure." << std::endl; }
 	}
@@ -239,6 +203,7 @@ Database::Account Database::lookupAccount(std::string guid)
 	Account account;
 	account.guid = guid;
 
+	/*
 	try
 	{
 		if (webserver->isConnected())
@@ -320,6 +285,7 @@ Database::Account Database::lookupAccount(std::string guid)
 	}
 
 	return account;
+	*/
 }
 
 void Database::shutdownCleanup()

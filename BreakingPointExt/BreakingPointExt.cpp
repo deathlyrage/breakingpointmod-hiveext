@@ -49,15 +49,22 @@ BreakingPointExt::BreakingPointExt(std::string a_serverFolder, int a_serverPort)
 	boost::property_tree::ini_parser::read_ini(serverFolder + "/BreakingPointExt.ini", pt);
 	int totalSlots = pt.get<int>("VIP.slots", 100);
 	int reservedSlots = pt.get<int>("VIP.reserved", 10);
-	std::string serviceName = pt.get<std::string>("FireDaemon.service","BPA3_1");
+	std::string serviceName = pt.get<std::string>("FIREDAEMON.service","BPA3_1");
 	std::string serverPassword = pt.get<std::string>("RCON.password", "rconpw");
-	std::string whitelistStr = pt.get<std::string>("RCON.whitelist", "true");
+	std::string whitelistStr = pt.get<std::string>("RCON.whitelist", "false");
 	int rconPort = pt.get<int>("RCON.port", 2305);
 	whitelist = false;
 	if (whitelistStr == "true") { whitelist = true; }
 	threadingDebug = pt.get<bool>("THREADING.debug", false);
 	int threadingSize = pt.get<int>("THREADING.size", 100);
 	int threadingDelay = pt.get<int>("THREADING.delay", 50);
+
+	// Database Details
+	DatabaseIP = pt.get<std::string>("DATABASE.ip", "127.0.0.1");
+	DatabaseName = pt.get<std::string>("DATABASE.database", "breakingpointmod");
+	DatabaseUser = pt.get<std::string>("DATABASE.username", "root");
+	DatabasePass = pt.get<std::string>("DATABASE.password", "");
+	DatabasePort = pt.get<std::string>("DATABASE.port", "3306");
 
 	//Init Rcon
 	rcon = new Rcon();
