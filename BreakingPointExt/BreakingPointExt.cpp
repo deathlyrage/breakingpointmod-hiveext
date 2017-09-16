@@ -142,8 +142,6 @@ BreakingPointExt::BreakingPointExt(std::string a_serverFolder, int a_serverPort)
 
 	//Hack Data
 	handlers[900] = boost::bind(&BreakingPointExt::fetchHackData, this, _1);
-	
-	rcon->restart();
 };
 
 BreakingPointExt::~BreakingPointExt()
