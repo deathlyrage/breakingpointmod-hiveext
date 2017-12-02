@@ -311,7 +311,7 @@ void Database::populateObjects(std::queue<Sqf::Parameters>& queue)
 
 		//Fetch Objects For This Instance
 		Poco::Data::Statement stmt((*activeSession));
-		stmt << "select id.`unique_id`, d.`class_name`, id.`owner_id`, id.`player_id`, id.`worldspace`, id.`inventory`, id.`lock`, id.`building_id` from `instance_deployable` id inner join `deployable` d on id.`deployable_id` = d.`id` where id.`instance_id` = ? AND `deployable_id` IS NOT NULL", use(serverID);
+		stmt << "select id.`unique_id`, d.`class_name`, id.`owner_id`, id.`player_id`, id.`worldspace`, id.`inventory`, id.`fuel`, id.`lock`, id.`building_id` from `instance_deployable` id inner join `deployable` d on id.`deployable_id` = d.`id` where id.`instance_id` = ? AND `deployable_id` IS NOT NULL", use(serverID);
 		stmt.execute();
 
 		//Execute Ghosting Async
@@ -368,10 +368,13 @@ void Database::populateObjects(std::queue<Sqf::Parameters>& queue)
 
 				objParams.push_back(inventory);
 
-				string lock = rs[6].convert<std::string>();
+				double fuel = rs[6].convert<double>();
+				objParams.push_back(fuel);
+
+				string lock = rs[7].convert<std::string>();
 				objParams.push_back(lock);
 
-				string buildingID = rs[7].convert<std::string>();
+				string buildingID = rs[8].convert<std::string>();
 				objParams.push_back(buildingID);
 
 				queue.push(objParams);
