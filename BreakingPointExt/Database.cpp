@@ -413,7 +413,7 @@ void Database::populateVehicles(std::queue<Sqf::Parameters>& queue)
 	try
 	{
 		Poco::Data::Statement stmt((*activeSession));
-		stmt << "select `unique_id`, `classname`, `worldspace`, `inventory`, `parts`, `fuel`, `damage` from `instance_vehicle` where `instance_id` = ?", use(serverID), now;
+		stmt << "select `id`, `classname`, `worldspace`, `inventory`, `parts`, `fuel`, `damage` from `instance_vehicle` where `instance_id` = ?", use(serverID), now;
 		Poco::Data::RecordSet rs(stmt);
 
 		if (rs.columnCount() >= 1)
@@ -1108,23 +1108,23 @@ bool Database::updateObjectInventory(Int64 objectIdent, Sqf::Value& inventory)
 };
 
 
-bool Database::createVehicle(string className, double damage, Sqf::Value worldSpace, Sqf::Value inventory, Sqf::Value hitPoints, double fuel, Int64 uniqueID)
+Sqf::Value Database::createVehicle(string className, double damage, Sqf::Value worldSpace, Sqf::Value inventory, Sqf::Value hitPoints, double fuel,string id)
 {
 	std::string worldSpaceStr = lexical_cast<string>(worldSpace);
 	std::string inventoryStr = lexical_cast<string>(inventory);
 	std::string hitpointsStr = lexical_cast<string>(hitPoints);
-
+	
 	Poco::Data::Statement stmt((*activeSession));
 	stmt << "insert into `instance_vehicle` (`instance_id`, `unique_id`, `classname`, `worldspace`, `inventory`, `parts`, `fuel`, `damage`, `created`) " <<
 		"VALUES (?,?,?,?,?,?,?,?,CURRENT_TIMESTAMP)",
-		use(serverID), use(uniqueID), use(className), use(worldSpaceStr), use(inventoryStr), use(hitpointsStr), use(fuel), use(damage), now;
-	return true;
+		use(serverID), use(id), use(className), use(worldSpaceStr), use(inventoryStr), use(hitpointsStr), use(fuel), use(damage), now;
+	return getLastInsertId();
 }
 
 bool Database::deleteVehicle(Int64 objectIdent)
 {
 	Poco::Data::Statement stmt((*activeSession));
-	stmt << "delete from `instance_vehicle` where `unique_id` = ? and `instance_id` = ?", use(objectIdent), use(serverID), now;
+	stmt << "delete from `instance_vehicle` where `id` = ? and `instance_id` = ?", use(objectIdent), use(serverID), now;
 	return true;
 };
 
@@ -1132,7 +1132,7 @@ bool Database::updateVehicleInventory(Int64 objectIdent, Sqf::Value& inventory)
 {
 	std::string inventoryStr = lexical_cast<string>(inventory);
 	Poco::Data::Statement stmt((*activeSession));
-	stmt << "update `instance_vehicle` set `inventory` = ? where `unique_id` = ? and `instance_id` = ?", use(inventoryStr), use(objectIdent), use(serverID), now;
+	stmt << "update `instance_vehicle` set `inventory` = ? where `id` = ? and `instance_id` = ?", use(inventoryStr), use(objectIdent), use(serverID), now;
 	return true;
 };
 
@@ -1140,7 +1140,7 @@ bool Database::timestampVehicle(Int64 uniqueID)
 {
 	Poco::Data::Statement stmt((*activeSession));
 	std::string uniqueIDStr = lexical_cast<string>(uniqueID);
-	stmt << "UPDATE `instance_vehicle` SET `last_updated` = now() WHERE `unique_id` = ? and `instance_id` = ?", use(uniqueID), use(serverID), now;
+	stmt << "UPDATE `instance_vehicle` SET `last_updated` = now() WHERE `id` = ? and `instance_id` = ?", use(uniqueID), use(serverID), now;
 	return true;
 }
 
@@ -1148,7 +1148,7 @@ bool Database::updateVehicleMovement(Int64 objectIdent, Sqf::Value& worldSpace, 
 {
 	Poco::Data::Statement stmt((*activeSession));
 	std::string worldSpaceStr = lexical_cast<string>(worldSpace);
-	stmt << "update `instance_vehicle` set `worldspace` = ?, `fuel` = ? where `unique_id` = ? and `instance_id` = ?", use(worldSpaceStr), use(fuel), use(objectIdent), use(serverID), now;
+	stmt << "update `instance_vehicle` set `worldspace` = ?, `fuel` = ? where `id` = ? and `instance_id` = ?", use(worldSpaceStr), use(fuel), use(objectIdent), use(serverID), now;
 	return true;
 }
 
@@ -1156,7 +1156,7 @@ bool Database::updateVehicleStatus(Int64 objectIdent, Sqf::Value& hitPoints, dou
 {
 	std::string hitPointsStr = lexical_cast<string>(hitPoints);
 	Poco::Data::Statement stmt((*activeSession));
-	stmt << "update `instance_vehicle` set `parts` = ?, `damage` = ? where `unique_id` = ? and `instance_id` = ?", use(hitPointsStr), use(damage), use(objectIdent), use(serverID), now;
+	stmt << "update `instance_vehicle` set `parts` = ?, `damage` = ? where `id` = ? and `instance_id` = ?", use(hitPointsStr), use(damage), use(objectIdent), use(serverID), now;
 	return true;
 }
 
@@ -1236,6 +1236,65 @@ bool Database::kickLog(string name, string guid, string kick)
 	return true;
 };
 
+Sqf::Value Database::getLastInsertId()
+{
+	try
+	{
+		Poco::Data::Statement stmt((*activeSession));
+		stmt << "SELECT LAST_INSERT_ID()", now;
+
+		Sqf::Parameters retVal;
+
+		Poco::Data::RecordSet rs(stmt);
+		if (rs.rowCount() > 0 && rs.columnCount() >= 1)
+		{
+			Sqf::Value lastInsertId;
+			try
+			{
+				string id = rs[0].convert<string>();
+				lastInsertId = lexical_cast<Sqf::Value>(id);
+				retVal.push_back(lastInsertId);
+			}
+			catch (boost::bad_lexical_cast)
+			{
+				console->log("Error getting last inserted ID!");
+			}
+		}
+		else
+		{
+			retVal.push_back("ERROR");
+		}
+		return retVal;
+	}
+	catch (Poco::Exception const& ex)
+	{
+		Sqf::Parameters retVal;
+		retVal.push_back(string("ERROR"));
+		console->log(ex.what());
+		return retVal;
+	}
+	catch (boost::bad_lexical_cast const& ex)
+	{
+		Sqf::Parameters retVal;
+		retVal.push_back(string("ERROR"));
+		console->log(ex.what());
+		return retVal;
+	}
+	catch (boost::bad_get const& ex)
+	{
+		Sqf::Parameters retVal;
+		retVal.push_back(string("ERROR"));
+		console->log(ex.what());
+		return retVal;
+	}
+	catch (std::exception const& ex)
+	{
+		Sqf::Parameters retVal;
+		retVal.push_back(string("ERROR"));
+		console->log(ex.what());
+		return retVal;
+	}
+};
 
 bool Database::adminLog(string playerID, string playerName, string action)
 {

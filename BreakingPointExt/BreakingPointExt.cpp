@@ -32,6 +32,7 @@
 
 #include <boost/progress.hpp>
 
+
 typedef boost::function<Sqf::Value(Sqf::Parameters)> HandlerFunc;
 map<int, HandlerFunc> handlers;
 
@@ -838,12 +839,9 @@ Sqf::Value BreakingPointExt::vehicleCreate(Sqf::Parameters params)
 	Sqf::Value inventory = boost::get<Sqf::Parameters>(params.at(3));
 	Sqf::Value hitPoints = boost::get<Sqf::Parameters>(params.at(4));
 	double fuel = Sqf::GetDouble(params.at(5));
-	Int64 uniqueID = Sqf::GetBigInt(params.at(6));
+	string id = "0";
 
-	if (uniqueID > 0)
-		return booleanReturn(database->createVehicle(className, damage, worldSpace, inventory, hitPoints, fuel, uniqueID));
-
-	return booleanReturn(true);
+	return database->createVehicle(className, damage, worldSpace, inventory, hitPoints, fuel, id);
 };
 
 Sqf::Value BreakingPointExt::vehicleDelete(Sqf::Parameters params)
@@ -1101,6 +1099,13 @@ std::string BreakingPointExt::callExtension(std::string function)
 	try
 	{
 		res = handler(params);
+#ifdef DEV
+		// log it if debug is enabled
+		if (threadingDebug)
+		{
+			console->log("callExtensionResult: " + lexical_cast<string>(res), ArmaConsole::LogType::CRITICAL);
+		}
+#endif
 	}
 	catch (Poco::Data::MySQL::ConnectionException& ex)
 	{

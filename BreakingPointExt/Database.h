@@ -62,6 +62,7 @@ extern int serverID;
 extern ArmaConsole * console;
 
 class Database
+
 {
 	private:
 		Poco::Data::Session * activeSession;
@@ -115,7 +116,7 @@ class Database
 		bool updateObjectInventory(Int64 objectIdent, Sqf::Value& inventory);
 		bool deleteObject(Int64 objectIdent);
 
-		bool createVehicle(string className, double damage, Sqf::Value worldSpace, Sqf::Value inventory, Sqf::Value hitPoints, double fuel, Int64 uniqueID);
+		Sqf::Value createVehicle(string className, double damage, Sqf::Value worldSpace, Sqf::Value inventory, Sqf::Value hitPoints, double fuel, string id);
 		bool deleteVehicle(Int64 objectIdent);
 		bool updateVehicleInventory(Int64 objectIdent, Sqf::Value& inventory);
 		bool timestampVehicle(Int64 uniqueID);
@@ -135,5 +136,6 @@ class Database
 		bool storageLog(string playerID, string playerName, string deployableID, string deployableName, string ownerID);
 		bool hackLog(string playerID, string playerName, string reason);
 		bool kickLog(string name, string guid, string kick);
+		Sqf::Value getLastInsertId();
 		bool adminLog(string playerID, string playerName, string action);
 };
