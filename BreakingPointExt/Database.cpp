@@ -949,7 +949,6 @@ Sqf::Value Database::fetchCharacterDetails(int characterID)
 	}
 };
 
-
 bool Database::clearActiveServer(int characterID, string playerID)
 {
 	if (characterID > 0)
@@ -1106,7 +1105,6 @@ bool Database::updateObjectInventory(Int64 objectIdent, Sqf::Value& inventory)
 	stmt << "update `instance_deployable` set `inventory` = ? where `unique_id` = ? and `instance_id` = ?", use(inventoryStr), use(objectIdent), use(serverID), now;
 	return true;
 };
-
 
 Sqf::Value Database::createVehicle(string className, double damage, Sqf::Value worldSpace, Sqf::Value inventory, Sqf::Value hitPoints, double fuel,string id)
 {

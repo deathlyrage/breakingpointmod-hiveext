@@ -37,7 +37,10 @@
 
 #include <boost/progress.hpp>
 
-extern "C" { __declspec (dllexport) void __stdcall RVExtension(char *output, int outputSize, const char *function); }
+extern "C" { 
+	__declspec (dllexport) void __stdcall RVExtension(char *output, int outputSize, const char *function);
+	__declspec (dllexport) void __stdcall RVExtensionVersion(char* output, int outputSize);
+}
 
 int serverID = 0;
 bool worker_working = false; //worker working status
@@ -188,6 +191,11 @@ void __stdcall RVExtension(char *output, int outputSize, const char *function)
 	} else {
 		strncpy_s(output, outputSize, "INVALID COMMAND", _TRUNCATE); // other input 
 	}
+}
+
+void __stdcall RVExtensionVersion(char* output, int outputSize)
+{
+	strncpy_s(output, outputSize, breakingPointExt->versionNum.c_str(), _TRUNCATE);
 }
 
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)

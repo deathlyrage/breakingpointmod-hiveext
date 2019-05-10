@@ -31,13 +31,16 @@
 #include <boost/property_tree/ini_parser.hpp>
 
 #include <boost/progress.hpp>
-
+//#define DEV
 
 typedef boost::function<Sqf::Value(Sqf::Parameters)> HandlerFunc;
 map<int, HandlerFunc> handlers;
 
 BreakingPointExt::BreakingPointExt(std::string a_serverFolder, int a_serverPort)
 {
+	//Extension Version
+	versionNum = "0.001";
+
 	//Load Args
 	serverFolder = a_serverFolder;
 	serverPort = a_serverPort;
@@ -230,8 +233,10 @@ Sqf::Value BreakingPointExt::serverBootup(Sqf::Parameters params)
 	database->connect();
 	
 	loaded = true;
-	
-	return booleanReturn(true);
+
+	Sqf::Parameters retVal;
+	retVal.push_back(versionNum);
+	return retVal;
 };
 
 Sqf::Value BreakingPointExt::serverShutdown(Sqf::Parameters params)
