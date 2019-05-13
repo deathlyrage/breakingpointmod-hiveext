@@ -27,6 +27,7 @@ class BreakingPointExt
 
 		bool loaded;
 		bool whitelist;
+		bool fireDeamonActive;
 		bool threadingDebug;
 
 		int timeUntilRestart();
