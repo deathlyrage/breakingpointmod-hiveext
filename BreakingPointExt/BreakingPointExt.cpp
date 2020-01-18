@@ -31,12 +31,16 @@
 #include <boost/property_tree/ini_parser.hpp>
 
 #include <boost/progress.hpp>
+//#define DEV
 
 typedef boost::function<Sqf::Value(Sqf::Parameters)> HandlerFunc;
 map<int, HandlerFunc> handlers;
 
 BreakingPointExt::BreakingPointExt(std::string a_serverFolder, int a_serverPort)
 {
+	//Extension Version
+	versionNum = "0.001";
+
 	//Load Args
 	serverFolder = a_serverFolder;
 	serverPort = a_serverPort;
@@ -49,13 +53,16 @@ BreakingPointExt::BreakingPointExt(std::string a_serverFolder, int a_serverPort)
 	boost::property_tree::ini_parser::read_ini(serverFolder + "/BreakingPointExt.ini", pt);
 	int totalSlots = pt.get<int>("VIP.slots", 100);
 	int reservedSlots = pt.get<int>("VIP.reserved", 10);
+	std::string fireDeamonActiveStr = pt.get<std::string>("FIREDAEMON.active", "false");
 	std::string serviceName = pt.get<std::string>("FIREDAEMON.service", "BPA3_1");
 	std::string fireDaemonPath = pt.get<std::string>("FIREDAEMON.path", "C:/Program Files/FireDaemon/Firedaemon.exe");
 	std::string serverPassword = pt.get<std::string>("RCON.password", "rconpw");
 	std::string whitelistStr = pt.get<std::string>("RCON.whitelist", "false");
 	int rconPort = pt.get<int>("RCON.port", 2305);
 	whitelist = false;
+	fireDeamonActive = false;
 	if (whitelistStr == "true") { whitelist = true; }
+	if (fireDeamonActiveStr == "true") { fireDeamonActive = true; }
 	threadingDebug = pt.get<bool>("THREADING.debug", false);
 	int threadingSize = pt.get<int>("THREADING.size", 100);
 	int threadingDelay = pt.get<int>("THREADING.delay", 50);
@@ -70,7 +77,7 @@ BreakingPointExt::BreakingPointExt(std::string a_serverFolder, int a_serverPort)
 	//Init Rcon
 	rcon = new Rcon();
 	rcon->updateLogin("127.0.0.1", rconPort, serverPassword);
-	rcon->init(totalSlots, reservedSlots, serviceName, fireDaemonPath, whitelist);
+	rcon->init(totalSlots, reservedSlots, fireDeamonActive, serviceName, fireDaemonPath, whitelist);
 
 	//Init Async Worker
 	asyncWorker = new AsyncWorker(threadingDebug,threadingSize,threadingDelay);
@@ -229,8 +236,10 @@ Sqf::Value BreakingPointExt::serverBootup(Sqf::Parameters params)
 	database->connect();
 	
 	loaded = true;
-	
-	return booleanReturn(true);
+
+	Sqf::Parameters retVal;
+	retVal.push_back(versionNum);
+	return retVal;
 };
 
 Sqf::Value BreakingPointExt::serverShutdown(Sqf::Parameters params)
@@ -838,12 +847,9 @@ Sqf::Value BreakingPointExt::vehicleCreate(Sqf::Parameters params)
 	Sqf::Value inventory = boost::get<Sqf::Parameters>(params.at(3));
 	Sqf::Value hitPoints = boost::get<Sqf::Parameters>(params.at(4));
 	double fuel = Sqf::GetDouble(params.at(5));
-	Int64 uniqueID = Sqf::GetBigInt(params.at(6));
+	string id = "0";
 
-	if (uniqueID > 0)
-		return booleanReturn(database->createVehicle(className, damage, worldSpace, inventory, hitPoints, fuel, uniqueID));
-
-	return booleanReturn(true);
+	return database->createVehicle(className, damage, worldSpace, inventory, hitPoints, fuel, id);
 };
 
 Sqf::Value BreakingPointExt::vehicleDelete(Sqf::Parameters params)
@@ -1101,6 +1107,13 @@ std::string BreakingPointExt::callExtension(std::string function)
 	try
 	{
 		res = handler(params);
+#ifdef DEV
+		// log it if debug is enabled
+		if (threadingDebug)
+		{
+			console->log("callExtensionResult: " + lexical_cast<string>(res), ArmaConsole::LogType::CRITICAL);
+		}
+#endif
 	}
 	catch (Poco::Data::MySQL::ConnectionException& ex)
 	{

@@ -685,7 +685,7 @@ void Rcon::disconnect()
 	*rcon_run_flag = false;
 }
 
-void Rcon::init(int a_totalSlots, int a_reservedSlots, std::string a_serviceName, std::string a_fireDaemonPath, bool a_whitelist)
+void Rcon::init(int a_totalSlots, int a_reservedSlots, bool a_fireDeamonActive , std::string a_serviceName, std::string a_fireDaemonPath, bool a_whitelist)
 {
 	whitelist = a_whitelist;
 	lastWarningMinute = -1; 
@@ -694,6 +694,7 @@ void Rcon::init(int a_totalSlots, int a_reservedSlots, std::string a_serviceName
 	reservedSlots = a_reservedSlots;
 	serviceName = a_serviceName;
 	fireDaemonPath = a_fireDaemonPath;
+	fireDeamonActive = a_fireDeamonActive;
 
 	createKeepAlive();
 }
@@ -708,11 +709,13 @@ void Rcon::updateLogin(std::string address, int port, std::string password)
 	rcon_login.auto_reconnect = true;
 }
 
-
 void Rcon::restart()
 {
 	console->log("Rcon::Restart()", ArmaConsole::LogType::DEBUG);
 	//std::string command = "start \"\" \"C:\\Program Files (x86)\\FireDaemon\\Firedaemon.exe\" --restart " + serviceName;
-	std::string command = "start \"\" \"" + fireDaemonPath + "\""" --restart " + serviceName;
-	system(command.c_str());
+	if (fireDeamonActive)
+	{
+		std::string command = "start \"\" \"" + fireDaemonPath + "\""" --restart " + serviceName;
+		system(command.c_str());
+	}
 }

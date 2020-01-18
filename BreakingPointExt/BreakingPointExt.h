@@ -23,8 +23,11 @@ class BreakingPointExt
 		std::string callExtension(std::string function);
 		static Sqf::Parameters BreakingPointExt::booleanReturn(bool isGood);
 
+		std::string versionNum;
+
 		bool loaded;
 		bool whitelist;
+		bool fireDeamonActive;
 		bool threadingDebug;
 
 		int timeUntilRestart();
