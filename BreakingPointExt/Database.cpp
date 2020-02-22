@@ -1014,7 +1014,7 @@ bool Database::updateCharacter(int characterID, const FieldsType& fields)
 			}
 		}
 		//other stats
-		else if (name == "zombie_kills" || name == "headshots" || name == "survival_time" || name == "survivor_kills" || name == "lastserver" || name == "class" || name == "ranger" || name == "outlaw" || name == "hunter" || name == "nomad" || name == "survivalist" || name == "engineer")
+		else if (name == "zombie_kills" || name == "headshots" || name == "survival_time" || name == "survivor_kills" || name == "lastserver" || name == "class" || name == "ranger" || name == "outlaw" || name == "hunter" || name == "nomad" || name == "survivalist" || name == "engineer" || name == "undead")
 		{
 			sqlFields[name] = "'" + lexical_cast<string>(val)+"'";
 		}
@@ -1033,7 +1033,7 @@ bool Database::updateCharacter(int characterID, const FieldsType& fields)
 		{
 			string fieldName = it->first;
 
-			if (fieldName == "ranger" || fieldName == "outlaw" || fieldName == "hunter" || fieldName == "nomad" || fieldName == "survivalist" || fieldName == "engineer") {
+			if (fieldName == "ranger" || fieldName == "outlaw" || fieldName == "hunter" || fieldName == "nomad" || fieldName == "survivalist" || fieldName == "engineer" || fieldName == "undead") {
 				joinProfile = true;
 				setClause += "p.`" + fieldName + "` = " + it->second;
 			}

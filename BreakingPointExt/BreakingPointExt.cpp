@@ -39,7 +39,7 @@ map<int, HandlerFunc> handlers;
 BreakingPointExt::BreakingPointExt(std::string a_serverFolder, int a_serverPort)
 {
 	//Extension Version
-	versionNum = "0.001";
+	versionNum = "0.002";
 
 	//Load Args
 	serverFolder = a_serverFolder;
